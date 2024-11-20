@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Typing Test</title>
+    <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+    <div class="game-section">
+        <h2>Typing Test</h2>
+        <p>Customize the text to type:</p>
+        <input type="text" id="customText" placeholder="Enter custom text">
+        <button onclick="setTypingText()" style="font-weight: bold;">Set Text</button>
+        <p id="typingText" style="font-weight: bold; text-shadow: 2px 2px 4px black;">The quick brown fox jumps over the lazy dog.</p>
+        <textarea id="typingArea" rows="5" cols="50" disabled></textarea>
+        <p>Words per minute: <span id="wpm">0</span></p>
+        <p>Time remaining: <span id="typingTimer">60</span> seconds</p>
+        <button onclick="startTypingTest()">Start Typing Test</button>
+        <br><br>
+        <a href="../index.html"><button>Go Back to Menu</button></a>
+    </div>
+    <script src="../js/typing.js"></script>
+</body>
+</html>

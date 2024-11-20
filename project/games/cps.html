@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CPS Test</title>
+    <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+    <div class="game-section">
+        <h2>CPS Test</h2>
+        <p>Choose your test duration:</p>
+        <select id="cpsDuration" onchange="reloadCpsTest()">
+            <option value="10">10 seconds</option>
+            <option value="20">20 seconds</option>
+            <option value="30">30 seconds</option>
+            <option value="40">40 seconds</option> <!-- Added 40 seconds -->
+            <option value="50">50 seconds</option> <!-- Added 50 seconds -->
+        </select>
+        <button onclick="startCpsTest()">Start Test</button>
+        <p id="cpsResult">Click as fast as you can!</p>
+        <p>Clicks: <span id="cpsCount">0</span></p>
+        <p>Time remaining: <span id="cpsTimer">0</span> seconds</p>
+        <button id="clickButton" onclick="countClick()" disabled>Click Me!</button>
+        <br><br>
+        <a href="../index.html"><button>Go Back to Menu</button></a>
+    </div>
+    <script src="../js/cps.js"></script>
+</body>
+</html>

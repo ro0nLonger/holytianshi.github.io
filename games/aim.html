@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aim Trainer</title>
+    <style>
+        /* Apply the theme background gradient and general styles */
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(to bottom, #87ceeb, #1e90ff); /* Blue gradient background */
+            color: #ffffff;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+        }
+
+        /* Game section container with centered layout */
+        .game-section {
+            text-align: center;
+            padding: 20px;
+            border: 1px solid #ffffff;
+            border-radius: 10px;
+            background-color: rgba(255, 255, 255, 0.1);
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+            width: 90%;
+            max-width: 500px; /* Increased max width for larger display */
+        }
+
+        /* Square area where the circles appear */
+        .aim-square {
+            position: relative;
+            width: 300px;
+            height: 300px;
+            margin: 15px auto;
+            background-color: #1e90ff;
+            border: 2px solid #ffffff;
+            overflow: hidden;
+        }
+
+        /* Styling for timer and score */
+        #timer, #highScore, #score {
+            font-size: 20px;
+            color: #ffffff;
+        }
+
+        #highScore {
+            margin-top: 10px;
+        }
+
+        /* Styling for the buttons */
+        .game-section button {
+            background-color: #1e90ff;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 20px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .game-section button:hover {
+            background-color: #1c86ee;
+        }
+
+        /* Square target for aim trainer */
+        .circle {
+            position: absolute;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            cursor: pointer;
+            animation: rainbow 1s infinite; /* Rainbow flashing effect */
+        }
+
+        /* Keyframe for rainbow color animation */
+        @keyframes rainbow {
+            0% {background-color: red;}
+            14% {background-color: orange;}
+            28% {background-color: yellow;}
+            42% {background-color: green;}
+            57% {background-color: blue;}
+            71% {background-color: indigo;}
+            85% {background-color: violet;}
+            100% {background-color: red;}
+        }
+
+        /* Styling for the restart button */
+        #restartButton {
+            margin-top: 20px;
+            background-color: #3498db; /* Consistent button color */
+            color: white;
+            border-radius: 20px;
+            padding: 10px 20px;
+            cursor: pointer;
+            border: none;
+        }
+
+        #restartButton:hover {
+            background-color: #2980b9; /* Darker on hover */
+        }
+
+        /* Go back to menu button */
+        #goBackButton {
+            margin-top: 20px;
+            background-color: #1e90ff;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 20px;
+            font-size: 16px;
+            text-decoration: none;
+            display: inline-block;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        #goBackButton:hover {
+            background-color: #1c86ee;
+        }
+
+        /* Message when the game is over */
+        #loseMessage {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 48px;
+            font-weight: bold;
+            text-align: center;
+            color: red;
+        }
+
+    </style>
+</head>
+<body>
+    <div class="game-section">
+        <!-- Game area and timer info -->
+        <div id="timer">Time: <span id="countdown">20</span> seconds</div>
+        <div id="highScore">High Score: <span id="highscore">0</span></div>
+        <div id="score">Score: <span id="points">0</span></div>
+
+        <!-- Square area where the circles appear -->
+        <div id="aim-square" class="aim-square">
+            <!-- Circles will be added here dynamically -->
+        </div>
+
+        <!-- Start button -->
+        <button id="startButton">Start</button>
+        <!-- Restart button -->
+        <button id="restartButton" style="display: none;">Restart</button>
+
+        <!-- Go back to menu button -->
+        <a href="../index.html">
+            <button id="goBackButton">Go Back to Menu</button>
+        </a>
+
+        <!-- Lose message -->
+        <div id="loseMessage">GOOD JOB</div>
+    </div>
+
+    <script>
+        let circles = [];
+        let score = 0;
+        let started = false;
+        let circleCounter = 0;
+        const maxCircles = 100;
+        let countdownValue = 20; // Updated to 20 seconds
+        let highScore = localStorage.getItem('highScore') || 0;
+        document.getElementById('highscore').innerText = highScore;
+
+        // Load the start button and add the event listener
+        document.getElementById('startButton').addEventListener('click', function() {
+            if (!started) {
+                started = true;
+                startTimer();
+                createCircle(); // Create the first circle
+                document.getElementById('startButton').style.display = 'none'; // Hide start button
+            }
+        });
+
+        // Restart button logic
+        document.getElementById('restartButton').addEventListener('click', function() {
+            restartGame();
+        });
+
+        function startTimer() {
+            const countdownElement = document.getElementById('countdown');
+            const countdownInterval = setInterval(() => {
+                countdownValue--;
+                countdownElement.innerText = countdownValue;
+                if (countdownValue <= 0) {
+                    clearInterval(countdownInterval);
+                    if (circleCounter < maxCircles) {
+                        document.getElementById('loseMessage').style.display = 'block';
+                        document.getElementById('restartButton').style.display = 'block';
+                    }
+                }
+            }, 1000);
+        }
+
+        function createCircle() {
+            if (circleCounter >= maxCircles) return; // Stop creating circles if the limit is reached
+
+            const circle = document.createElement('div');
+            circle.className = 'circle';
+            const gameArea = document.getElementById('aim-square');
+            const gameAreaRect = gameArea.getBoundingClientRect();
+
+            // Random position inside the square box (game area)
+            const x = Math.random() * (gameAreaRect.width - 50); // Adjusted for circle size
+            const y = Math.random() * (gameAreaRect.height - 50); // Adjusted for circle size
+
+            circle.style.left = x + 'px';
+            circle.style.top = y + 'px';
+
+            // Add click event to increment score and create a new circle
+            circle.onclick = function() {
+                score++;
+                document.getElementById('points').innerText = score;
+                createCircle(); // Create a new circle when clicked
+                this.remove(); // Remove the clicked circle
+
+                circleCounter++; // Increment circle counter
+
+                if (circleCounter >= maxCircles) {
+                    if (score > highScore) {
+                        highScore = score;
+                        localStorage.setItem('highScore', highScore); // Save new high score to localStorage
+                        document.getElementById('highscore').innerText = highScore;
+                    }
+                    restartGame();
+                }
+            };
+
+            gameArea.appendChild(circle); // Append the circle to the game area
+            circles.push(circle);
+        }
+
+        function restartGame() {
+            circles.forEach(circle => circle.remove());
+            circles = [];
+            score = 0;
+            started = false;
+            circleCounter = 0;
+            countdownValue = 20; // Reset countdown to 20
+            document.getElementById('points').innerText = score;
+            document.getElementById('countdown').innerText = countdownValue;
+            document.getElementById('loseMessage').style.display = 'none';
+            document.getElementById('restartButton').style.display = 'none';
+            document.getElementById('startButton').style.display = 'block'; // Show start button again
+        }
+    </script>
+</body>
+</html>
